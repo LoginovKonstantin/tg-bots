@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install app dependencies
-RUN npm install
+RUN npm install --registry https://registry.npmjs.org
 
 # Bundle app source
 COPY . .
