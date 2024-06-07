@@ -22,7 +22,7 @@ export class AppService {
 
   constructor(private readonly config: ConfigService) {}
 
-  @Cron('0 12,14,16,18,20,22 * * *')
+  @Cron('0 7,9,11,13,15,17 * * *')
   async handleCron() {
     const PARTICIPANTS = JSON.parse(this.config.get('PARTICIPANTS'));
 
