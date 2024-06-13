@@ -97,10 +97,19 @@ export class AppService {
       portfolio.totalAmountPortfolio.nano,
     );
 
+    const percent = AppMapper.getPercents(
+      inputOutputAmount,
+      portfolioAmountNow,
+    );
+
+    this.logger.log(
+      `${name}: ${JSON.stringify({ inputOutputAmount, portfolioAmountNow, percent })}`,
+    );
+
     return {
       name,
       accountName,
-      percent: AppMapper.getPercents(inputOutputAmount, portfolioAmountNow),
+      percent,
     };
   }
 
