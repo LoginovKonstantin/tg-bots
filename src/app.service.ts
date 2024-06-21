@@ -14,6 +14,7 @@ import {
   GetOperationsOptions,
   Participant,
   ParticipantIncomeResult,
+  Portfolio,
 } from './app.interfaces';
 
 @Injectable()
@@ -87,15 +88,14 @@ export class AppService {
     }
 
     const inputOutputAmount = operations.reduce((acc, curr) => {
-      const { units, nano } = curr.payment;
-      acc += AppMapper.unitsAndNanoToNumber(units, nano);
+      acc += AppMapper.unitsAndNanoToNumber(curr.payment);
       return acc;
     }, 0);
 
-    const portfolioAmountNow = AppMapper.unitsAndNanoToNumber(
-      portfolio.totalAmountPortfolio.units,
-      portfolio.totalAmountPortfolio.nano,
-    );
+    const usdInRub = this.getUsdPositionInRub(portfolio);
+
+    const portfolioAmountNow =
+      AppMapper.unitsAndNanoToNumber(portfolio.totalAmountPortfolio) - usdInRub;
 
     const percent = AppMapper.getPercents(
       inputOutputAmount,
@@ -189,5 +189,20 @@ export class AppService {
       GetPortfolio: (token: string) => defaultHeader(token),
       GetOperations: (token: string) => defaultHeader(token),
     };
+  }
+
+  private getUsdPositionInRub(portfolio: Portfolio) {
+    const hasUsdCurrency = portfolio.positions.find(
+      (p) => p.figi === 'BBG0013HGFT4' && p.instrumentType === 'currency',
+    );
+
+    if (!hasUsdCurrency) {
+      return 0;
+    }
+
+    const price = AppMapper.unitsAndNanoToNumber(hasUsdCurrency.currentPrice);
+    const quantity = AppMapper.unitsAndNanoToNumber(hasUsdCurrency.quantity);
+
+    return price * quantity;
   }
 }

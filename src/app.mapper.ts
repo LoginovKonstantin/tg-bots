@@ -25,12 +25,14 @@ export class AppMapper {
     );
   }
 
-  static unitsAndNanoToNumber(
-    units: string | number,
-    nano: string | number,
-  ): number {
+  static unitsAndNanoToNumber(params: {
+    units: string | number;
+    nano: string | number;
+  }): number {
     return Number(
-      new Big(units).plus(new Big(nano).div(1_000_000_000)).toPrecision(5),
+      new Big(params.units)
+        .plus(new Big(params.nano).div(1_000_000_000))
+        .toPrecision(5),
     );
   }
 }
