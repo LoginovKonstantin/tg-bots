@@ -3,25 +3,27 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 
-import { AppMapper } from './app.mapper';
-import { URLS, CONFIG } from './app.constants';
+import { TournamentsMapper } from './tournaments.mapper';
+import { URLS, CONFIG } from './tournaments.constants';
 import {
   AccountResponse,
   PortfolioResponse,
   OperationResponse,
-} from './app.types';
+} from './tournaments.types';
 import {
   GetOperationsOptions,
   Participant,
   ParticipantIncomeResult,
   Portfolio,
-} from './app.interfaces';
+} from './tournaments.interfaces';
 
 @Injectable()
-export class AppService {
-  private readonly logger = new Logger(AppService.name);
+export class TournamentsService {
+  private readonly logger = new Logger(TournamentsService.name);
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly config: ConfigService) {
+    this.handleCron();
+  }
 
   @Cron('0 7,9,11,13,15,17 * * *')
   async handleCron() {
@@ -88,16 +90,17 @@ export class AppService {
     }
 
     const inputOutputAmount = operations.reduce((acc, curr) => {
-      acc += AppMapper.unitsAndNanoToNumber(curr.payment);
+      acc += TournamentsMapper.unitsAndNanoToNumber(curr.payment);
       return acc;
     }, 0);
 
     const usdInRub = this.getUsdPositionInRub(portfolio);
 
     const portfolioAmountNow =
-      AppMapper.unitsAndNanoToNumber(portfolio.totalAmountPortfolio) - usdInRub;
+      TournamentsMapper.unitsAndNanoToNumber(portfolio.totalAmountPortfolio) -
+      usdInRub;
 
-    const percent = AppMapper.getPercents(
+    const percent = TournamentsMapper.getPercents(
       inputOutputAmount,
       portfolioAmountNow,
     );
@@ -169,8 +172,8 @@ export class AppService {
 
   private async sendMessageToTelegram(message: string): Promise<void> {
     const baseUrl = this.config.get('TELEGRAM_URL');
-    const token = this.config.get('TELEGRAM_TOKEN');
-    const chatId = this.config.get('TELEGRAM_CHAT_ID');
+    const token = this.config.get('T_TELEGRAM_TOKEN');
+    const chatId = this.config.get('T_TELEGRAM_CHAT_ID');
 
     const url = `${baseUrl}/bot${token}/sendMessage?parse_mode=html&chat_id=${chatId}&text=${message}`;
 
@@ -200,8 +203,12 @@ export class AppService {
       return 0;
     }
 
-    const price = AppMapper.unitsAndNanoToNumber(hasUsdCurrency.currentPrice);
-    const quantity = AppMapper.unitsAndNanoToNumber(hasUsdCurrency.quantity);
+    const price = TournamentsMapper.unitsAndNanoToNumber(
+      hasUsdCurrency.currentPrice,
+    );
+    const quantity = TournamentsMapper.unitsAndNanoToNumber(
+      hasUsdCurrency.quantity,
+    );
 
     return price * quantity;
   }

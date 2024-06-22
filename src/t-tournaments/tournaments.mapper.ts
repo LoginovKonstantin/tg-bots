@@ -1,7 +1,7 @@
 import Big from 'big.js';
-import { Portfolio } from './app.interfaces';
+import { Portfolio } from './tournaments.interfaces';
 
-export class AppMapper {
+export class TournamentsMapper {
   static portfolioGetStaticYieldInPercents(portfolio: Portfolio): number {
     const START_VALUE =
       portfolio.accountId === '2164476715' ? Number(6192.33) : 5000;

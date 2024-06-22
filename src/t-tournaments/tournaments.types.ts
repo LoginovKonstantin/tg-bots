@@ -1,4 +1,4 @@
-import { Account, Operation, Portfolio } from './app.interfaces';
+import { Account, Operation, Portfolio } from './tournaments.interfaces';
 
 export type AccountResponse = Account[] | undefined;
 export type PortfolioResponse = Portfolio | undefined;

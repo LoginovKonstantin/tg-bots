@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { ScheduleModule } from '@nestjs/schedule';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TournamentsModule } from './t-tournaments/tournaments.module';
+import { AnekdoterModule } from './a-anekdoter/anekdoter.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), ConfigModule.forRoot()],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [TournamentsModule, AnekdoterModule],
 })
 export class AppModule {}
