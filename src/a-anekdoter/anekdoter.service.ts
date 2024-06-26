@@ -14,7 +14,7 @@ export class AnekdoterService {
     this.handleCron();
   }
 
-  @Cron('*/30 12-22 * * *', { timeZone: 'Asia/Yekaterinburg' })
+  @Cron('0 13,15,17,19,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
   async handleCron() {
     const page = await this.getMemDayPage();
     const mem = this.getRandomMemFromPage(page);
