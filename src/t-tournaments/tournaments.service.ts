@@ -25,7 +25,7 @@ export class TournamentsService {
     this.handleCron();
   }
 
-  @Cron('0 7,9,11,13,15,17 * * *')
+  @Cron('0 7,9,11,13,15,17 1-29 6 *')
   async handleCron() {
     const PARTICIPANTS = JSON.parse(this.config.get('PARTICIPANTS'));
 
@@ -39,6 +39,17 @@ export class TournamentsService {
         acc += `${i + 1}) ${name} <code>${percent}%</code> ${i === 0 ? '👑' : ''} ${error ? `Доп. инфо: ${error}\n` : '\n'}`;
         return acc;
       }, CONFIG.name);
+
+    await this.sendMessageToTelegram(encodeURIComponent(message));
+  }
+
+  @Cron('0 15 30 6 *')
+  async handleCron2() {
+    const PARTICIPANTS = JSON.parse(this.config.get('PARTICIPANTS'));
+
+    const all = await Promise.all(PARTICIPANTS.map(this.getParticipantIncome));
+    const winner = all.sort((a, b) => b.percent - a.percent)[0];
+    const message = `${CONFIG.name} Winner ${winner.name} <code>${winner.percent}%</code> 👑`;
 
     await this.sendMessageToTelegram(encodeURIComponent(message));
   }
