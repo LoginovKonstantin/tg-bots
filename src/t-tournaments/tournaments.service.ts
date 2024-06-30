@@ -47,7 +47,7 @@ export class TournamentsService {
   async handleCron2() {
     const PARTICIPANTS = JSON.parse(this.config.get('PARTICIPANTS'));
 
-    const all = await Promise.all(PARTICIPANTS.map(this.getParticipantIncome));
+    const all = await Promise.all(PARTICIPANTS.map((p) => this.getParticipantIncome(p)));
     const winner = all.sort((a, b) => b.percent - a.percent)[0];
     const message = `${CONFIG.name} Winner ${winner.name} <code>${winner.percent}%</code> 👑`;
 
