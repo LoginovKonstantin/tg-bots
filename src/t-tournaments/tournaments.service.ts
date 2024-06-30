@@ -22,10 +22,10 @@ export class TournamentsService {
   private readonly logger = new Logger(TournamentsService.name);
 
   constructor(private readonly config: ConfigService) {
-    this.handleCron2();
+   // this.handleCron2();
   }
 
-  @Cron('0 7,9,11,13,15,17 1-29 6 *')
+ // @Cron('0 7,9,11,13,15,17 1-29 6 *')
   async handleCron() {
     const PARTICIPANTS = JSON.parse(this.config.get('PARTICIPANTS'));
 
@@ -43,7 +43,7 @@ export class TournamentsService {
     await this.sendMessageToTelegram(encodeURIComponent(message));
   }
 
-  @Cron('0 21 30 6 *')
+ // @Cron('0 21 30 6 *')
   async handleCron2() {
     const PARTICIPANTS = JSON.parse(this.config.get('PARTICIPANTS'));
 
