@@ -43,7 +43,7 @@ export class TournamentsService {
     await this.sendMessageToTelegram(encodeURIComponent(message));
   }
 
-  @Cron('0 15 30 6 *')
+  @Cron('15 21 30 6 *')
   async handleCron2() {
     const PARTICIPANTS = JSON.parse(this.config.get('PARTICIPANTS'));
 
