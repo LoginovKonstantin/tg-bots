@@ -60,7 +60,7 @@ export class AnekdoterService {
     const token = this.config.get('A_TELEGRAM_TOKEN');
     const chatId = this.config.get('A_TELEGRAM_CHAT_ID');
 
-    const url = `${baseUrl}/bot${token}/sendMessage?parse_mode=html&chat_id=${chatId}&text=${message}`;
+    const url = `${baseUrl}/bot${token}/sendPhoto?parse_mode=html&chat_id=${chatId}&photo=${message}`;
 
     await axios.get(url).catch((e) => {
       this.logger.error(e);
