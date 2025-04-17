@@ -27,7 +27,7 @@ export class SentimentService implements OnModuleInit {
   }
 
   private initializeBot() {
-    const token = this.config.get('TELEGRAM_TOKEN');
+    const token = this.config.get('A_TELEGRAM_TOKEN');
     this.bot = new Telegraf(token);
 
     this.bot.on('text', (ctx) => {
