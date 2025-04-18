@@ -5,6 +5,13 @@ import { Telegraf } from 'telegraf';
 import { russianDictionary } from './sentiment.constants';
 import { AnekdoterService } from '../anekdoter.service';
 
+const messageMapFunction = {
+  ['бот мем']: 'memFunction',
+  ['бот скинь мем']: 'memFunction',
+  ['бот переделывай']: 'memFunction',
+  ['бот по новой']: 'memFunction',
+};
+
 @Injectable()
 //Так как у библиотеки Telegraf какой-то аналог веб-сокета, то нужно хукнуть(запустить бота) раньше чем прила запустится
 export class SentimentService implements OnModuleInit {
@@ -35,14 +42,8 @@ export class SentimentService implements OnModuleInit {
     this.bot = new Telegraf(token);
 
     this.bot.on('text', (ctx) => {
-      if (ctx.message.text === 'бот переделывай') {
-        this.anekdoterService.handleCron();
-        return;
-      }
-
-      if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
-        this.sendEmotionalAnswer(ctx);
-        return;
+      if (messageMapFunction[ctx.message.text] === 'memFunction') {
+        return this.anekdoterService.handleCron();
       }
       this.sendEmotionalAnswer(ctx);
     });
