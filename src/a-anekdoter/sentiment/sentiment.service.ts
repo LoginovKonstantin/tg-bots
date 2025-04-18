@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as Sentiment from 'sentiment';
 import { Telegraf } from 'telegraf';
 import { russianDictionary } from './sentiment.constants';
+import { AnekdoterService } from '../anekdoter.service';
 
 @Injectable()
 //Так как у библиотеки Telegraf какой-то аналог веб-сокета, то нужно хукнуть(запустить бота) раньше чем прила запустится
@@ -10,7 +11,10 @@ export class SentimentService implements OnModuleInit {
   private sentiment: Sentiment;
   private bot: Telegraf;
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly anekdoterService: AnekdoterService,
+  ) {}
 
   async onModuleInit() {
     this.initializeSentiment();
@@ -27,10 +31,15 @@ export class SentimentService implements OnModuleInit {
   }
 
   private initializeBot() {
-    const token = this.config.get('TELEGRAM_TOKEN');
+    const token = this.config.get('A_TELEGRAM_TOKEN');
     this.bot = new Telegraf(token);
 
     this.bot.on('text', (ctx) => {
+      if (ctx.message.text === 'бот переделывай') {
+        this.anekdoterService.handleCron();
+        return;
+      }
+
       if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
         this.sendEmotionalAnswer(ctx);
         return;
