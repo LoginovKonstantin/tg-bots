@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { URLS } from './anekdoter.constants';
+import { sendPhotoMessageToTelegram } from '../utils/send-photo-message-to-telegram';
 
 @Injectable()
 export class AnekdoterService {
@@ -19,7 +20,13 @@ export class AnekdoterService {
     const page = await this.getMemDayPage();
     const mem = this.getRandomMemFromPage(page);
     console.log(mem);
-    await this.sendMessageToTelegram(encodeURIComponent(mem));
+
+    await sendPhotoMessageToTelegram({
+      telegramUrl: this.config.get('TELEGRAM_URL'),
+      telegramToken: this.config.get('A_TELEGRAM_TOKEN'),
+      telegramChatId: this.config.get('A_TELEGRAM_CHAT_ID'),
+      message: encodeURIComponent(mem),
+    });
 
     if (this.links.size > 100) {
       this.links = new Set(Array.from(this.links).slice(10));
@@ -46,24 +53,11 @@ export class AnekdoterService {
   }
 
   async getMemDayPage(): Promise<string> {
-    const url = URLS.AnekdotRuMemDay;
     try {
-      const result = await axios.get(url);
+      const result = await axios.get(URLS.AnekdotRuMemDay);
       return result.data;
     } catch (e) {
       this.logger.error(e);
     }
-  }
-
-  private async sendMessageToTelegram(message: string): Promise<void> {
-    const baseUrl = this.config.get('TELEGRAM_URL');
-    const token = this.config.get('A_TELEGRAM_TOKEN');
-    const chatId = this.config.get('A_TELEGRAM_CHAT_ID');
-
-    const url = `${baseUrl}/bot${token}/sendPhoto?parse_mode=html&chat_id=${chatId}&photo=${message}`;
-
-    await axios.get(url).catch((e) => {
-      this.logger.error(e);
-    });
   }
 }

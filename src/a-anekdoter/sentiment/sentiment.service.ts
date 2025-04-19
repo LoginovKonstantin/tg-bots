@@ -4,13 +4,7 @@ import * as Sentiment from 'sentiment';
 import { Telegraf } from 'telegraf';
 import { russianDictionary } from './sentiment.constants';
 import { AnekdoterService } from '../anekdoter.service';
-
-const messageMapFunction = {
-  ['бот мем']: 'memFunction',
-  ['бот скинь мем']: 'memFunction',
-  ['бот переделывай']: 'memFunction',
-  ['бот по новой']: 'memFunction',
-};
+import { BoobsService } from '../boobs.service';
 
 @Injectable()
 //Так как у библиотеки Telegraf какой-то аналог веб-сокета, то нужно хукнуть(запустить бота) раньше чем прила запустится
@@ -21,6 +15,7 @@ export class SentimentService implements OnModuleInit {
   constructor(
     private readonly config: ConfigService,
     private readonly anekdoterService: AnekdoterService,
+    private readonly boobsService: BoobsService,
   ) {}
 
   async onModuleInit() {
@@ -42,9 +37,17 @@ export class SentimentService implements OnModuleInit {
     this.bot = new Telegraf(token);
 
     this.bot.on('text', (ctx) => {
-      if (messageMapFunction[ctx.message.text] === 'memFunction') {
-        return this.anekdoterService.handleCron();
+      const message = String(ctx.message.text).toLowerCase();
+
+      const sendFunction = {
+        ['бот мем']: this.anekdoterService.handleCron,
+        ['бот сиськи']: this.boobsService.sendBoobs,
+      }[message];
+
+      if (sendFunction) {
+        return sendFunction();
       }
+
       this.sendEmotionalAnswer(ctx);
     });
   }
@@ -66,9 +69,9 @@ export class SentimentService implements OnModuleInit {
       if (score > 1) {
         ctx.reply('Спасибо за добрые слова 😊');
       } else if (score < -1) {
-        ctx.reply('Мне жаль, что ты так думаешь 😢');
+        ctx.reply('Я понял, тебя гнида, Крек защити меня! @RubinKirill  😢');
       } else {
-        ctx.reply('Я понял, что ты обо мне говоришь, но не уверен в смысле 🤔');
+        ctx.reply('Такой команды нет, тупой кожаный мешок');
       }
     } else {
       console.log('Слово "бот" не найдено в очищенном тексте.');
