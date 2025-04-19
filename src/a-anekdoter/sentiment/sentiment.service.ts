@@ -39,13 +39,12 @@ export class SentimentService implements OnModuleInit {
     this.bot.on('text', (ctx) => {
       const message = String(ctx.message.text).toLowerCase();
 
-      const sendFunction = {
-        ['бот мем']: this.anekdoterService.handleCron,
-        ['бот сиськи']: this.boobsService.sendBoobs,
-      }[message];
+      if (message === 'бот мем') {
+        return this.anekdoterService.handleCron();
+      }
 
-      if (sendFunction) {
-        return sendFunction();
+      if (message === 'бот сиськи') {
+        return this.boobsService.sendBoobs();
       }
 
       this.sendEmotionalAnswer(ctx);
