@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
 import { AnekdoterService } from './anekdoter.service';
-import { SentimentModule } from './sentiment/sentiment.module';
 import { BoobsService } from './boobs.service';
+import { SentimentService } from './sentiment/sentiment.service';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), ConfigModule.forRoot(), SentimentModule],
+  imports: [ScheduleModule.forRoot(), ConfigModule.forRoot()],
   controllers: [],
-  providers: [AnekdoterService, BoobsService],
+  providers: [AnekdoterService, BoobsService, SentimentService],
 })
 export class AnekdoterModule {}
