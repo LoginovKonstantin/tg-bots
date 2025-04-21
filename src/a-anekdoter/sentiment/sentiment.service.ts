@@ -56,6 +56,7 @@ export class SentimentService implements OnModuleInit {
     const regex = new RegExp(`(^|\\s)${word}($|\\s)`); // Создаём регулярное выражение для поиска слова
 
     const cleanedText = ctx.message.text
+      .toLowerCase()
       .replace(/[^\w\sа-яА-ЯёЁ]/g, '')
       .replace(/\s+/g, ' ')
       .trim();
