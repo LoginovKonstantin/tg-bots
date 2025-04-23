@@ -5,6 +5,7 @@ import { Telegraf } from 'telegraf';
 import { russianDictionary } from './sentiment.constants';
 import { AnekdoterService } from '../anekdoter.service';
 import { BoobsService } from '../boobs.service';
+import { NaturalService } from '../natural/natural.service';
 
 @Injectable()
 //Так как у библиотеки Telegraf какой-то аналог веб-сокета, то нужно хукнуть(запустить бота) раньше чем прила запустится
@@ -16,6 +17,7 @@ export class SentimentService implements OnModuleInit {
     private readonly config: ConfigService,
     private readonly anekdoterService: AnekdoterService,
     private readonly boobsService: BoobsService,
+    private readonly naturalService: NaturalService,
   ) {}
 
   async onModuleInit() {
@@ -50,7 +52,7 @@ export class SentimentService implements OnModuleInit {
       this.sendEmotionalAnswer(ctx);
     });
   }
-  private sendEmotionalAnswer(ctx: any) {
+  private async sendEmotionalAnswer(ctx: any) {
     //Тестировал слово по регулярному выражению
     const word = 'бот';
     const regex = new RegExp(`(^|\\s)${word}($|\\s)`); // Создаём регулярное выражение для поиска слова
@@ -63,12 +65,12 @@ export class SentimentService implements OnModuleInit {
 
     if (regex.test(cleanedText)) {
       // Тут внутренняя библиотека считает очки харизмы в чатике
-      const result = this.sentiment.analyze(cleanedText, { language: 'ru' });
-      const score = result.score;
-
-      if (score > 1) {
+      // const result = this.sentiment.analyze(cleanedText, { language: 'ru' });
+      //  const score = result.score;
+      const score = await this.naturalService.encodeText(cleanedText);
+      if (score >= 3) {
         ctx.reply('Спасибо за добрые слова 😊');
-      } else if (score < -1) {
+      } else if (score < 3) {
         ctx.reply('Я понял тебя гнида, Крек защити меня! @RubinKirill  😢');
       } else {
         ctx.reply('Для тебя такой команды нет, тупой кожаный мешок');
