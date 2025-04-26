@@ -5,6 +5,7 @@ import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { URLS } from './anekdoter.constants';
 import { sendPhotoMessageToTelegram } from '../utils/send-photo-message-to-telegram';
+import { sendMessageToTelegram } from '../utils/send-message-to-telegram';
 
 @Injectable()
 export class AnekdoterService {
@@ -13,6 +14,16 @@ export class AnekdoterService {
 
   constructor(private readonly config: ConfigService) {
     this.handleCron();
+  }
+
+  @Cron('0 21 * * 6', { timeZone: 'Asia/Yekaterinburg' })
+  async handleCronParachute() {
+    await sendMessageToTelegram({
+      telegramUrl: this.config.get('TELEGRAM_URL'),
+      telegramToken: this.config.get('A_TELEGRAM_TOKEN'),
+      telegramChatId: this.config.get('A_TELEGRAM_CHAT_ID'),
+      message: '@RubinKirill Кирилл сикуха, так и не прыгнул с парашютом!  😢',
+    });
   }
 
   @Cron('0 13,15,17,19,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
