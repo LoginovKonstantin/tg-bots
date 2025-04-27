@@ -12,11 +12,9 @@ export class AnekdoterService {
   private readonly logger = new Logger(AnekdoterService.name);
   private links = new Set();
 
-  constructor(private readonly config: ConfigService) {
-    this.handleCron();
-  }
+  constructor(private readonly config: ConfigService) {}
 
-  @Cron('0 21 * * 6', { timeZone: 'Asia/Yekaterinburg' })
+  @Cron('0 22 * * *', { timeZone: 'Asia/Yekaterinburg' })
   async handleCronParachute() {
     await sendMessageToTelegram({
       telegramUrl: this.config.get('TELEGRAM_URL'),
