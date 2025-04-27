@@ -11,8 +11,11 @@ import { sendMessageToTelegram } from '../utils/send-message-to-telegram';
 export class AnekdoterService {
   private readonly logger = new Logger(AnekdoterService.name);
   private links = new Set();
+  private jokes = new Set();
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly config: ConfigService) {
+    this.sendJoke();
+  }
 
   @Cron('0 22 * * *', { timeZone: 'Asia/Yekaterinburg' })
   async handleCronParachute() {
@@ -22,6 +25,24 @@ export class AnekdoterService {
       telegramChatId: this.config.get('A_TELEGRAM_CHAT_ID'),
       message: '@RubinKirill Кирилл сикуха, так и не прыгнул с парашютом!  😢',
     });
+  }
+
+  @Cron('30 13,15,17,19,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
+  async sendJoke() {
+    const page = await this.getJokePage();
+    const joke = this.getRandomJokeFromPage(page);
+    console.log(joke);
+
+    await sendMessageToTelegram({
+      telegramUrl: this.config.get('TELEGRAM_URL'),
+      telegramToken: this.config.get('A_TELEGRAM_TOKEN'),
+      telegramChatId: this.config.get('A_TELEGRAM_CHAT_ID'),
+      message: joke,
+    });
+
+    if (this.jokes.size > 100) {
+      this.jokes = new Set(Array.from(this.jokes).slice(10));
+    }
   }
 
   @Cron('0 13,15,17,19,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
@@ -61,9 +82,41 @@ export class AnekdoterService {
     return random;
   }
 
+  getRandomJokeFromPage(page: string): string {
+    const root = parse(page);
+
+    const jokes = root
+      .querySelectorAll('div.text')
+      .map((j) => j.childNodes)
+      .reduce(
+        (acc: Array<string>, curr) =>
+          curr.length === 1 ? acc.concat(curr[0]['_rawText']) : acc,
+        [],
+      );
+
+    const random = jokes[Math.floor(Math.random() * jokes.length)];
+
+    if (this.jokes.has(random)) {
+      return this.getRandomJokeFromPage(page);
+    }
+
+    this.jokes.add(random);
+
+    return random;
+  }
+
   async getMemDayPage(): Promise<string> {
     try {
       const result = await axios.get(URLS.AnekdotRuMemDay);
+      return result.data;
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  async getJokePage(): Promise<string> {
+    try {
+      const result = await axios.get(URLS.AnekdotRuJokeDay);
       return result.data;
     } catch (e) {
       this.logger.error(e);
