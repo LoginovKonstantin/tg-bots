@@ -17,17 +17,7 @@ export class AnekdoterService {
     this.sendJoke();
   }
 
-  @Cron('0 22 * * *', { timeZone: 'Asia/Yekaterinburg' })
-  async handleCronParachute() {
-    await sendMessageToTelegram({
-      telegramUrl: this.config.get('TELEGRAM_URL'),
-      telegramToken: this.config.get('A_TELEGRAM_TOKEN'),
-      telegramChatId: this.config.get('A_TELEGRAM_CHAT_ID'),
-      message: '@RubinKirill Кирилл сикуха, так и не прыгнул с парашютом!  😢',
-    });
-  }
-
-  @Cron('30 13,15,17,19,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
+  @Cron('30 13 * * *', { timeZone: 'Asia/Yekaterinburg' })
   async sendJoke() {
     const page = await this.getJokePage();
     const joke = this.getRandomJokeFromPage(page);
@@ -45,7 +35,7 @@ export class AnekdoterService {
     }
   }
 
-  @Cron('0 13,15,17,19,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
+  @Cron('0 13,17,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
   async handleCron() {
     const page = await this.getMemDayPage();
     const mem = this.getRandomMemFromPage(page);
