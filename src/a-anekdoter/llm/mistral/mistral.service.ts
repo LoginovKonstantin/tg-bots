@@ -6,7 +6,7 @@ export class MistralService {
   constructor(private readonly config: ConfigService) {
     this.logicAnswer('Привет');
   }
-  public async logicAnswer(questionExamption: string) {
+  public async logicAnswer(questionExamption: string): Promise<string> {
     const apiKey = this.config.get('MISTRAL_API_KEY');
 
     try {
@@ -32,7 +32,7 @@ export class MistralService {
       );
 
       console.log('Ответ:', response.data.choices['0'].message.content);
-      return response.data.choices['0'].message.content;
+      return json.stringify(response.data.choices['0'].message.content);
     } catch (error) {
       if (error instanceof AxiosError) {
         // Теперь TypeScript знает, что error — это AxiosError
