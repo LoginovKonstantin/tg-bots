@@ -27,7 +27,7 @@ export class MistralService {
             Accept: 'application/json',
             Authorization: `Bearer ${apiKey}`,
           },
-          timeout: 15000,
+          timeout: 60000,
         },
       );
 
@@ -36,7 +36,9 @@ export class MistralService {
     } catch (error) {
       if (error instanceof AxiosError) {
         // Теперь TypeScript знает, что error — это AxiosError
-        return error.response ? error.response.data : error.message;
+        return error.response.statusText
+          ? error.response.data.message
+          : error.message;
       } else {
         // Обработка других ошибок
         return String(error);
