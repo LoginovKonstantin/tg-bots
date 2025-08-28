@@ -66,10 +66,6 @@ export class SentimentService implements OnModuleInit {
       .trim();
 
     if (regex.test(cleanedText)) {
-      if (ctx.update.message.from.first_name === 'Kira') {
-        ctx.reply('Токены кончились, пора устроиться на работу');
-        return;
-      }
       if (ctx.update.message.from.first_name === 'Ainaz' || ctx.update.message.from.first_name === 'Айназ') {
         ctx.reply('Вы много лжете айназ');
         return;
