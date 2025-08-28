@@ -19,7 +19,7 @@ export class SentimentService implements OnModuleInit {
     private readonly anekdoterService: AnekdoterService,
     private readonly boobsService: BoobsService,
     private readonly naturalService: NaturalService,
-    private readonly mistraService: MistralService,
+    private readonly mistralService: MistralService,
   ) {}
 
   async onModuleInit() {
@@ -66,7 +66,15 @@ export class SentimentService implements OnModuleInit {
       .trim();
 
     if (regex.test(cleanedText)) {
-      ctx.reply(await this.mistraService.logicAnswer(cleanedText));
+      if (ctx.update.message.from.first_name === 'Kira') {
+        ctx.reply('Токены кончились, пора устроиться на работу');
+        return;
+      }
+      if (ctx.update.message.from.first_name === 'Ainaz' || ctx.update.message.from.first_name === 'Айназ') {
+        ctx.reply('Вы много лжете Айназ');
+        return;
+      }
+      ctx.reply(await this.mistralService.logicAnswer(cleanedText));
     }
   }
   private launchBot() {
