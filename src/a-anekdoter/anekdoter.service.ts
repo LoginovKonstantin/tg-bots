@@ -14,10 +14,10 @@ export class AnekdoterService {
   private jokes = new Set();
 
   constructor(private readonly config: ConfigService) {
-    this.sendJoke();
+    this.sendMeme();
   }
 
-  @Cron('30 13 * * *', { timeZone: 'Asia/Yekaterinburg' })
+  // @Cron('30 13 * * *', { timeZone: 'Asia/Yekaterinburg' })
   async sendJoke() {
     const page = await this.getJokePage();
     const joke = this.getRandomJokeFromPage(page);
@@ -35,8 +35,30 @@ export class AnekdoterService {
     }
   }
 
-  @Cron('0 13,17,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
-  async handleCron() {
+  @Cron('0 0 12 * * 0', { timeZone: 'Asia/Yekaterinburg' })
+  async sendGameInvite() {
+    await sendMessageToTelegram({
+      telegramUrl: this.config.get('TELEGRAM_URL'),
+      telegramToken: this.config.get('A_TELEGRAM_TOKEN'),
+      telegramChatId: this.config.get('A_TELEGRAM_CHAT_ID'),
+      message:
+        'Здарова кожаные, у вас сегодня собрание в дискорде в 18:00 МСК (20:00 ПРМ)',
+    });
+  }
+
+  @Cron('0 55 19 * * 0', { timeZone: 'Asia/Yekaterinburg' })
+  async sendGameInvite2() {
+    await sendMessageToTelegram({
+      telegramUrl: this.config.get('TELEGRAM_URL'),
+      telegramToken: this.config.get('A_TELEGRAM_TOKEN'),
+      telegramChatId: this.config.get('A_TELEGRAM_CHAT_ID'),
+      message:
+        'Собрание кожаных в дискорде через 5 минут, заходи быстрее скуфидон',
+    });
+  }
+
+  @Cron('0 13,21 * * *', { timeZone: 'Asia/Yekaterinburg' })
+  async sendMeme() {
     const page = await this.getMemDayPage();
     const mem = this.getRandomMemFromPage(page);
     console.log(mem);

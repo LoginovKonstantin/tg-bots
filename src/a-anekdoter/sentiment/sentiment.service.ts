@@ -44,7 +44,7 @@ export class SentimentService implements OnModuleInit {
       const message = String(ctx.message.text).toLowerCase();
 
       if (message === 'бот мем') {
-        return this.anekdoterService.handleCron();
+        return this.anekdoterService.sendMeme();
       }
 
       if (message === 'бот сиськи') {
@@ -66,10 +66,6 @@ export class SentimentService implements OnModuleInit {
       .trim();
 
     if (regex.test(cleanedText)) {
-      if (ctx.update.message.from.first_name === 'Ainaz' || ctx.update.message.from.first_name === 'Айназ') {
-        ctx.reply('Вы много лжете айназ');
-        return;
-      }
       ctx.reply(await this.mistralService.logicAnswer(cleanedText));
     }
   }
